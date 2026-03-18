@@ -11,6 +11,19 @@ class JogoCarro:
         self.tela = pygame.display.set_mode((LARGURA, ALTURA))
         pygame.display.set_caption("Car Dodge: Antigravity Edition")
         self.relogio = pygame.time.Clock()
+        
+        try:
+            surface_jogador = pygame.image.load("player_car.png").convert()
+            surface_jogador.set_colorkey(surface_jogador.get_at((0, 0)))
+            self.img_jogador = pygame.transform.scale(surface_jogador, (50, 80))
+
+            surface_inimigo = pygame.image.load("enemy_car.png").convert()
+            surface_inimigo.set_colorkey(surface_inimigo.get_at((0, 0)))
+            self.img_inimigo = pygame.transform.scale(surface_inimigo, (50, 80))
+        except Exception:
+            self.img_jogador = None
+            self.img_inimigo = None
+
         self.reset_jogo()
 
     def reset_jogo(self):
@@ -84,13 +97,23 @@ class JogoCarro:
                 self.game_over = True
 
     def desenhar(self):
-        # Desenha Jogador (Fica ciano quando pula)
-        cor_player = (0, 255, 255) if self.esta_pulando else (0, 100, 255)
-        pygame.draw.rect(self.tela, cor_player, self.jogador)
+        # Desenha Jogador
+        if self.img_jogador:
+            if self.esta_pulando:
+                self.img_jogador.set_alpha(150) # Fica semi-transparente quando pula
+            else:
+                self.img_jogador.set_alpha(255)
+            self.tela.blit(self.img_jogador, self.jogador.topleft)
+        else:
+            cor_player = (0, 255, 255) if self.esta_pulando else (0, 100, 255)
+            pygame.draw.rect(self.tela, cor_player, self.jogador)
         
         # Desenha Inimigos
         for inimigo in self.inimigos:
-            pygame.draw.rect(self.tela, (255, 50, 50), inimigo)
+            if self.img_inimigo:
+                self.tela.blit(self.img_inimigo, inimigo.topleft)
+            else:
+                pygame.draw.rect(self.tela, (255, 50, 50), inimigo)
         
         self.mostrar_texto(f"Pontos: {self.pontos}", 25, 30)
         if self.esta_pulando:
