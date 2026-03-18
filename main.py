@@ -1,5 +1,6 @@
 import pygame
 import random
+import os
 
 # Configurações Globais
 LARGURA, ALTURA = 400, 600
@@ -12,15 +13,17 @@ class JogoCarro:
         pygame.display.set_caption("Car Dodge: Antigravity Edition")
         self.relogio = pygame.time.Clock()
         
+        base_path = os.path.dirname(os.path.abspath(__file__))
         try:
-            surface_jogador = pygame.image.load("player_car.png").convert()
+            surface_jogador = pygame.image.load(os.path.join(base_path, "player_car.png")).convert()
             surface_jogador.set_colorkey(surface_jogador.get_at((0, 0)))
             self.img_jogador = pygame.transform.scale(surface_jogador, (50, 80))
 
-            surface_inimigo = pygame.image.load("enemy_car.png").convert()
+            surface_inimigo = pygame.image.load(os.path.join(base_path, "enemy_car.png")).convert()
             surface_inimigo.set_colorkey(surface_inimigo.get_at((0, 0)))
             self.img_inimigo = pygame.transform.scale(surface_inimigo, (50, 80))
-        except Exception:
+        except Exception as e:
+            print("Erro ao carregar as imagens:", e)
             self.img_jogador = None
             self.img_inimigo = None
 
