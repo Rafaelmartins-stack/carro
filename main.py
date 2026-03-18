@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import asyncio
 
 # Configurações Globais
 LARGURA, ALTURA = 400, 600
@@ -15,12 +16,14 @@ class JogoCarro:
         
         base_path = os.path.dirname(os.path.abspath(__file__))
         try:
-            surface_jogador = pygame.image.load(os.path.join(base_path, "player_car.png")).convert()
-            surface_jogador.set_colorkey(surface_jogador.get_at((0, 0)))
+            surface_jogador = pygame.image.load(os.path.join(base_path, "player_car_hires.png")).convert_alpha()
+            # Rotate 90 degrees if it was pointing right, to make it point UP
+            surface_jogador = pygame.transform.rotate(surface_jogador, 90)
             self.img_jogador = pygame.transform.scale(surface_jogador, (50, 80))
 
-            surface_inimigo = pygame.image.load(os.path.join(base_path, "enemy_car.png")).convert()
-            surface_inimigo.set_colorkey(surface_inimigo.get_at((0, 0)))
+            surface_inimigo = pygame.image.load(os.path.join(base_path, "enemy_car.png")).convert_alpha()
+            # The user asked to make images point "upwards" (para cima). The blue cars were pointing downwards. Let's flip them.
+            surface_inimigo = pygame.transform.rotate(surface_inimigo, 180)
             self.img_inimigo = pygame.transform.scale(surface_inimigo, (50, 80))
         except Exception as e:
             print("Erro ao carregar as imagens:", e)
@@ -44,7 +47,7 @@ class JogoCarro:
         rect = render.get_rect(center=(LARGURA//2, y))
         self.tela.blit(render, rect)
 
-    def rodar(self):
+    async def rodar(self):
         while True:
             self.tela.fill((50, 50, 50)) # Estrada
             
@@ -67,6 +70,7 @@ class JogoCarro:
 
             pygame.display.flip()
             self.relogio.tick(FPS)
+            await asyncio.sleep(0)
 
     def atualizar(self):
         teclas = pygame.key.get_pressed()
@@ -122,5 +126,9 @@ class JogoCarro:
         if self.esta_pulando:
             self.mostrar_texto("MODO ANTIGRAVIDADE ATIVO!", 15, 60)
 
+async def main():
+    jogo = JogoCarro()
+    await jogo.rodar()
+
 if __name__ == "__main__":
-    JogoCarro().rodar()
+    asyncio.run(main())
