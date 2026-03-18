@@ -65,15 +65,16 @@ class JogoCarro:
             self.tempo_pulo -= 1
             if self.tempo_pulo <= 0: self.esta_pulando = False
 
-        # Spawn de inimigos
+        # Spawn de inimigos: ficam mais rápidos e aparecem mais frequentemente
         self.spawn_timer += 1
-        if self.spawn_timer > 40:
+        limite_spawn = max(15, 40 - (self.pontos // 2))
+        if self.spawn_timer > limite_spawn:
             self.inimigos.append(pygame.Rect(random.randint(0, LARGURA-50), -100, 50, 80))
             self.spawn_timer = 0
 
         # Mover inimigos e colisão
         for inimigo in self.inimigos[:]:
-            inimigo.y += 7 + (self.pontos // 5) # Aumenta velocidade
+            inimigo.y += 7 + (self.pontos // 3) # Aumenta a velocidade drasticamente
             if inimigo.top > ALTURA:
                 self.inimigos.remove(inimigo)
                 self.pontos += 1
